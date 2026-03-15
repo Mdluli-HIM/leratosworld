@@ -73,15 +73,13 @@ export function InfiniteGallery() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    const updateWidth = () => {
-      setViewportWidth(window.innerWidth);
-    };
-
+    const updateWidth = () => setViewportWidth(window.innerWidth);
     updateWidth();
     window.addEventListener('resize', updateWidth);
-
     return () => window.removeEventListener('resize', updateWidth);
   }, []);
+
+  const isMobile = viewportWidth <= 720;
 
   const layout = useMemo<GalleryLayout>(() => {
     if (viewportWidth <= 720) {
@@ -113,7 +111,7 @@ export function InfiniteGallery() {
     };
   }, [viewportWidth]);
 
-  const tiles = useMemo<Tile[]>(() => buildTiles(layout), [layout]);
+  const tiles = useMemo(() => buildTiles(layout), [layout]);
   const rows = Math.ceil(galleryItems.length / layout.cols);
   const totalWidth = layout.cols * (layout.tileW + layout.gapX);
   const totalHeight = rows * (layout.tileH + layout.gapY);
@@ -139,7 +137,7 @@ export function InfiniteGallery() {
   useEffect(() => {
     const timeout = window.setTimeout(() => {
       setHintVisible(false);
-    }, 2200);
+    }, 1800);
 
     return () => window.clearTimeout(timeout);
   }, []);
@@ -172,8 +170,8 @@ export function InfiniteGallery() {
 
     if (!viewport || !stage) return;
 
-    let targetX = -totalWidth * (viewportWidth <= 720 ? 0.52 : 0.32);
-    let targetY = -totalHeight * (viewportWidth <= 720 ? 0.28 : 0.18);
+    let targetX = -totalWidth * (isMobile ? 0.52 : 0.32);
+    let targetY = -totalHeight * (isMobile ? 0.28 : 0.18);
     let currentX = targetX;
     let currentY = targetY;
     let vx = 0;
@@ -181,21 +179,24 @@ export function InfiniteGallery() {
 
     const wrapX = gsap.utils.wrap(-totalWidth, 0);
     const wrapY = gsap.utils.wrap(-totalHeight, 0);
+    const setX = gsap.quickSetter(stage, 'x', 'px');
+    const setY = gsap.quickSetter(stage, 'y', 'px');
+
+    const spring = isMobile ? 0.14 : 0.1;
+    const friction = isMobile ? 0.74 : 0.8;
 
     const render = () => {
-      vx += (targetX - currentX) * 0.08;
-      vy += (targetY - currentY) * 0.08;
+      vx += (targetX - currentX) * spring;
+      vy += (targetY - currentY) * spring;
 
-      vx *= 0.84;
-      vy *= 0.84;
+      vx *= friction;
+      vy *= friction;
 
       currentX += vx;
       currentY += vy;
 
-      gsap.set(stage, {
-        x: wrapX(currentX),
-        y: wrapY(currentY),
-      });
+      setX(wrapX(currentX));
+      setY(wrapY(currentY));
     };
 
     const ticker = () => render();
@@ -327,7 +328,7 @@ export function InfiniteGallery() {
       viewport.removeEventListener('pointercancel', onPointerCancel);
       window.removeEventListener('keydown', onKeyDown);
     };
-  }, [activeIndex, totalHeight, totalWidth, viewportWidth]);
+  }, [activeIndex, totalHeight, totalWidth, isMobile]);
 
   const handleLightboxWheel = (event: React.WheelEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -365,11 +366,8 @@ export function InfiniteGallery() {
     if (Math.abs(dx) < LIGHTBOX_SWIPE_THRESHOLD) return;
     if (Math.abs(dx) < Math.abs(dy)) return;
 
-    if (dx < 0) {
-      goNext();
-    } else {
-      goPrev();
-    }
+    if (dx < 0) goNext();
+    else goPrev();
   };
 
   const clones = [-1, 0, 1];
@@ -443,14 +441,16 @@ export function InfiniteGallery() {
                   }}
                 >
                   <div className="gallery-tile__image">
-                    <Image
+                    <img
                       src={tile.src}
                       alt={tile.alt}
-                      fill
-                      sizes={viewportWidth <= 720 ? '132px' : viewportWidth <= 980 ? '188px' : '260px'}
                       className="gallery-tile__img"
+                      loading="lazy"
+                      decoding="async"
+                      draggable="false"
                     />
                   </div>
+
                   <div className="gallery-tile__meta">
                     <span>{tile.id}</span>
                   </div>
