@@ -6,6 +6,7 @@ import { GlobalReveals } from '@/components/motion/global-reveals';
 import { SiteHeader } from '@/components/site/site-header';
 import { SiteFooter } from '@/components/site/site-footer';
 import { PurpleCursor } from '@/components/motion/purple-cursor';
+import { SiteToneSwitch } from '@/components/site/site-tone-switch';
 
 import './globals.css';
 
@@ -34,7 +35,7 @@ export default function RootLayout({
       <body className={`${bodyFont.variable} ${displayFont.variable}`}>
         <PageLoader />
         <GlobalReveals />
-        <PurpleCursor />
+        <SiteToneSwitch />
         <SiteHeader />
         {children}
         <SiteFooter />
