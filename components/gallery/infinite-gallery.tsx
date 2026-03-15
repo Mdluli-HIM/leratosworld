@@ -336,7 +336,10 @@ export function InfiniteGallery() {
     if (lightboxWheelLockRef.current) return;
     lightboxWheelLockRef.current = true;
 
-    const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+    const delta =
+      Math.abs(event.deltaX) > Math.abs(event.deltaY)
+        ? event.deltaX
+        : event.deltaY;
 
     if (delta > 0) {
       goNext();
@@ -349,13 +352,17 @@ export function InfiniteGallery() {
     }, 380);
   };
 
-  const handleLightboxPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+  const handleLightboxPointerDown = (
+    event: React.PointerEvent<HTMLDivElement>
+  ) => {
     lightboxSwipeRef.current.active = true;
     lightboxSwipeRef.current.startX = event.clientX;
     lightboxSwipeRef.current.startY = event.clientY;
   };
 
-  const handleLightboxPointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
+  const handleLightboxPointerUp = (
+    event: React.PointerEvent<HTMLDivElement>
+  ) => {
     if (!lightboxSwipeRef.current.active) return;
 
     const dx = event.clientX - lightboxSwipeRef.current.startX;
@@ -372,7 +379,8 @@ export function InfiniteGallery() {
 
   const clones = [-1, 0, 1];
   const activeItem = activeIndex !== null ? galleryItems[activeIndex] : null;
-  const activeCount = activeIndex !== null ? String(activeIndex + 1).padStart(2, '0') : '01';
+  const activeCount =
+    activeIndex !== null ? String(activeIndex + 1).padStart(2, '0') : '01';
 
   return (
     <section
@@ -380,7 +388,11 @@ export function InfiniteGallery() {
       data-color-mode={isColorMode ? 'color' : 'mono'}
       aria-label="Free pan gallery"
     >
-      <Link href="/" className="gallery-back-button" aria-label="Go back to homepage">
+      <Link
+        href="/"
+        className="gallery-back-button"
+        aria-label="Go back to homepage"
+      >
         <span className="gallery-back-button__arrow">←</span>
         <span className="gallery-back-button__label">Back</span>
       </Link>
@@ -389,7 +401,11 @@ export function InfiniteGallery() {
         type="button"
         className={`gallery-color-switch${isColorMode ? ' gallery-color-switch--active' : ''}`}
         aria-pressed={isColorMode}
-        aria-label={isColorMode ? 'Switch gallery to black and white' : 'Switch gallery to color'}
+        aria-label={
+          isColorMode
+            ? 'Switch gallery to black and white'
+            : 'Switch gallery to color'
+        }
         onClick={() => setIsColorMode((value) => !value)}
       >
         <span className="gallery-color-switch__label">Mono</span>
@@ -399,7 +415,10 @@ export function InfiniteGallery() {
         <span className="gallery-color-switch__label">Color</span>
       </button>
 
-      <div className={`gallery-hint${hintVisible ? '' : ' gallery-hint--hidden'}`} aria-hidden="true">
+      <div
+        className={`gallery-hint${hintVisible ? '' : ' gallery-hint--hidden'}`}
+        aria-hidden="true"
+      >
         Drag
       </div>
 

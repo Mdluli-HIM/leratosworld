@@ -4815,3 +4815,68 @@ body {
     touch-action: none;
   }
 }
+
+
+/* Purple cursor */
+
+@media (hover: hover) and (pointer: fine) {
+  html.has-purple-cursor,
+  html.has-purple-cursor body,
+  html.has-purple-cursor a,
+  html.has-purple-cursor button,
+  html.has-purple-cursor [role='button'] {
+    cursor: none;
+  }
+
+  .purple-cursor,
+  .purple-cursor-dot {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-50%, -50%);
+  }
+
+  .purple-cursor {
+    width: 2.2rem;
+    height: 2.2rem;
+    border: 1px solid rgba(75, 54, 95, 0.34);
+    background: rgba(75, 54, 95, 0.06);
+    box-shadow:
+      0 0 0 1px rgba(75, 54, 95, 0.04) inset,
+      0 0 24px rgba(75, 54, 95, 0.14);
+    backdrop-filter: blur(3px);
+    transition:
+      width 180ms ease,
+      height 180ms ease,
+      border-color 180ms ease,
+      background 180ms ease,
+      box-shadow 180ms ease;
+  }
+
+  .purple-cursor-dot {
+    width: 0.36rem;
+    height: 0.36rem;
+    background: #4b365f;
+    box-shadow: 0 0 14px rgba(75, 54, 95, 0.38);
+  }
+
+  .purple-cursor[data-state='active'] {
+    width: 3rem;
+    height: 3rem;
+    border-color: rgba(75, 54, 95, 0.5);
+    background: rgba(75, 54, 95, 0.1);
+    box-shadow:
+      0 0 0 1px rgba(75, 54, 95, 0.06) inset,
+      0 0 34px rgba(75, 54, 95, 0.18);
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .purple-cursor,
+  .purple-cursor-dot {
+    display: none;
+  }
+}
