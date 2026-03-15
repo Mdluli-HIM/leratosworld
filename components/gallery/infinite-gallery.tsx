@@ -18,27 +18,31 @@ type Tile = {
   h: number;
 };
 
-const TILE_W = 260;
-const TILE_H = 330;
-const GAP_X = 96;
-const GAP_Y = 92;
-const COLS = 5;
+type GalleryLayout = {
+  tileW: number;
+  tileH: number;
+  gapX: number;
+  gapY: number;
+  cols: number;
+};
+
 const DRAG_THRESHOLD = 6;
+const LIGHTBOX_SWIPE_THRESHOLD = 42;
 
-function buildTiles() {
+function buildTiles(layout: GalleryLayout) {
   return galleryItems.map((item, index) => {
-    const col = index % COLS;
-    const row = Math.floor(index / COLS);
+    const col = index % layout.cols;
+    const row = Math.floor(index / layout.cols);
 
-    const rowOffset = row % 2 === 0 ? 0 : 38;
-    const colOffset = col % 2 === 0 ? 0 : 14;
+    const rowOffset = row % 2 === 0 ? 0 : layout.tileH * 0.08;
+    const colOffset = col % 2 === 0 ? 0 : layout.tileW * 0.06;
 
     return {
       ...item,
-      x: col * (TILE_W + GAP_X) + colOffset,
-      y: row * (TILE_H + GAP_Y) + rowOffset,
-      w: TILE_W,
-      h: TILE_H,
+      x: col * (layout.tileW + layout.gapX) + colOffset,
+      y: row * (layout.tileH + layout.gapY) + rowOffset,
+      w: layout.tileW,
+      h: layout.tileH,
     };
   });
 }
@@ -47,6 +51,11 @@ export function InfiniteGallery() {
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const stageRef = useRef<HTMLDivElement | null>(null);
   const lightboxWheelLockRef = useRef(false);
+  const lightboxSwipeRef = useRef({
+    startX: 0,
+    startY: 0,
+    active: false,
+  });
 
   const dragState = useRef({
     active: false,
@@ -58,14 +67,56 @@ export function InfiniteGallery() {
     pressedIndex: null as number | null,
   });
 
+  const [viewportWidth, setViewportWidth] = useState(1440);
   const [hintVisible, setHintVisible] = useState(true);
   const [isColorMode, setIsColorMode] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
-  const tiles = useMemo<Tile[]>(() => buildTiles(), []);
-  const rows = Math.ceil(galleryItems.length / COLS);
-  const totalWidth = COLS * (TILE_W + GAP_X);
-  const totalHeight = rows * (TILE_H + GAP_Y);
+  useEffect(() => {
+    const updateWidth = () => {
+      setViewportWidth(window.innerWidth);
+    };
+
+    updateWidth();
+    window.addEventListener('resize', updateWidth);
+
+    return () => window.removeEventListener('resize', updateWidth);
+  }, []);
+
+  const layout = useMemo<GalleryLayout>(() => {
+    if (viewportWidth <= 720) {
+      return {
+        tileW: 132,
+        tileH: 176,
+        gapX: 24,
+        gapY: 26,
+        cols: 3,
+      };
+    }
+
+    if (viewportWidth <= 980) {
+      return {
+        tileW: 188,
+        tileH: 248,
+        gapX: 42,
+        gapY: 42,
+        cols: 4,
+      };
+    }
+
+    return {
+      tileW: 260,
+      tileH: 330,
+      gapX: 96,
+      gapY: 92,
+      cols: 5,
+    };
+  }, [viewportWidth]);
+
+  const tiles = useMemo<Tile[]>(() => buildTiles(layout), [layout]);
+  const rows = Math.ceil(galleryItems.length / layout.cols);
+  const totalWidth = layout.cols * (layout.tileW + layout.gapX);
+  const totalHeight = rows * (layout.tileH + layout.gapY);
 
   const goNext = useCallback(() => {
     setActiveIndex((current) => {
@@ -88,7 +139,7 @@ export function InfiniteGallery() {
   useEffect(() => {
     const timeout = window.setTimeout(() => {
       setHintVisible(false);
-    }, 2600);
+    }, 2200);
 
     return () => window.clearTimeout(timeout);
   }, []);
@@ -121,8 +172,8 @@ export function InfiniteGallery() {
 
     if (!viewport || !stage) return;
 
-    let targetX = -totalWidth * 0.32;
-    let targetY = -totalHeight * 0.18;
+    let targetX = -totalWidth * (viewportWidth <= 720 ? 0.52 : 0.32);
+    let targetY = -totalHeight * (viewportWidth <= 720 ? 0.28 : 0.18);
     let currentX = targetX;
     let currentY = targetY;
     let vx = 0;
@@ -276,7 +327,7 @@ export function InfiniteGallery() {
       viewport.removeEventListener('pointercancel', onPointerCancel);
       window.removeEventListener('keydown', onKeyDown);
     };
-  }, [activeIndex, totalHeight, totalWidth]);
+  }, [activeIndex, totalHeight, totalWidth, viewportWidth]);
 
   const handleLightboxWheel = (event: React.WheelEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -295,6 +346,30 @@ export function InfiniteGallery() {
     window.setTimeout(() => {
       lightboxWheelLockRef.current = false;
     }, 380);
+  };
+
+  const handleLightboxPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    lightboxSwipeRef.current.active = true;
+    lightboxSwipeRef.current.startX = event.clientX;
+    lightboxSwipeRef.current.startY = event.clientY;
+  };
+
+  const handleLightboxPointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!lightboxSwipeRef.current.active) return;
+
+    const dx = event.clientX - lightboxSwipeRef.current.startX;
+    const dy = event.clientY - lightboxSwipeRef.current.startY;
+
+    lightboxSwipeRef.current.active = false;
+
+    if (Math.abs(dx) < LIGHTBOX_SWIPE_THRESHOLD) return;
+    if (Math.abs(dx) < Math.abs(dy)) return;
+
+    if (dx < 0) {
+      goNext();
+    } else {
+      goPrev();
+    }
   };
 
   const clones = [-1, 0, 1];
@@ -327,14 +402,14 @@ export function InfiniteGallery() {
       </button>
 
       <div className={`gallery-hint${hintVisible ? '' : ' gallery-hint--hidden'}`} aria-hidden="true">
-        Drag / Wheel / Keys
+        Drag
       </div>
 
       <div
         ref={viewportRef}
         className="gallery-canvas__viewport"
         tabIndex={0}
-        aria-label="Use trackpad, wheel, drag, or arrow keys to pan the gallery"
+        aria-label="Use touch drag, trackpad, wheel, or arrow keys to pan the gallery"
       >
         <div
           ref={stageRef}
@@ -372,7 +447,7 @@ export function InfiniteGallery() {
                       src={tile.src}
                       alt={tile.alt}
                       fill
-                      sizes="260px"
+                      sizes={viewportWidth <= 720 ? '132px' : viewportWidth <= 980 ? '188px' : '260px'}
                       className="gallery-tile__img"
                     />
                   </div>
@@ -429,13 +504,17 @@ export function InfiniteGallery() {
             onWheel={handleLightboxWheel}
           >
             <div className="gallery-lightbox__frame">
-              <div className="gallery-lightbox__media">
+              <div
+                className="gallery-lightbox__media"
+                onPointerDown={handleLightboxPointerDown}
+                onPointerUp={handleLightboxPointerUp}
+              >
                 <Image
                   key={activeItem.id}
                   src={activeItem.src}
                   alt={activeItem.alt}
                   fill
-                  sizes="(max-width: 720px) 88vw, 46vw"
+                  sizes="(max-width: 720px) 92vw, 46vw"
                   className="gallery-lightbox__img"
                 />
               </div>
