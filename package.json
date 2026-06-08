@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "generate-media": "node scripts/generate-media.mjs"
   },
   "dependencies": {
     "@gsap/react": "2.1.2",

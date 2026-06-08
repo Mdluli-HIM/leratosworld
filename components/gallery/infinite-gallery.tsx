@@ -386,15 +386,15 @@ export function InfiniteGallery() {
     <section
       className="gallery-canvas gallery-canvas--immersive"
       data-color-mode={isColorMode ? 'color' : 'mono'}
-      aria-label="Free pan gallery"
+      aria-label="Lerato photo gallery"
     >
       <Link
         href="/"
         className="gallery-back-button"
-        aria-label="Go back to homepage"
+        aria-label="Go back to album cover"
       >
         <span className="gallery-back-button__arrow">←</span>
-        <span className="gallery-back-button__label">Back</span>
+        <span className="gallery-back-button__label">Cover</span>
       </Link>
 
       <button

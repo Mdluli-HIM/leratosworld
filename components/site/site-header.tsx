@@ -3,12 +3,13 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
+import { site } from '@/content/site';
+
 const links = [
-  { href: '/', label: 'Index', number: '01' },
-  { href: '/projects', label: 'Projects', number: '02' },
+  { href: '/', label: 'Cover', number: '01' },
+  { href: '/projects', label: 'Volumes', number: '02' },
   { href: '/gallery', label: 'Gallery', number: '03' },
   { href: '/about', label: 'About', number: '04' },
-  { href: '/contact', label: 'Contact', number: '05' },
 ];
 
 function isActive(pathname: string, href: string) {
@@ -27,9 +28,9 @@ export function SiteHeader() {
     <header className="chrome-header">
       <div className="page-shell">
         <div className="chrome-header__bar">
-          <Link href="/" className="chrome-brand" aria-label="Go to homepage">
-            <span className="chrome-brand__code">Vol. 01</span>
-            <span className="chrome-brand__name">Cathy Dolle</span>
+          <Link href="/" className="chrome-brand" aria-label="Go to album cover">
+            <span className="chrome-brand__code">{site.albumLabel}</span>
+            <span className="chrome-brand__name">{site.shortName}</span>
           </Link>
 
           <nav className="chrome-nav" aria-label="Primary navigation">
@@ -51,8 +52,8 @@ export function SiteHeader() {
           </nav>
 
           <div className="chrome-status" aria-hidden="true">
-            <span className="chrome-status__label">Role</span>
-            <span className="chrome-status__value">Designer & Developer</span>
+            <span className="chrome-status__label">Gift</span>
+            <span className="chrome-status__value">Birthday album</span>
           </div>
         </div>
       </div>

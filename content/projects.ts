@@ -1,10 +1,26 @@
+import {
+  getVolumeImages,
+  getVolumeVideos,
+  volumeSlugs,
+  type VolumeSlug,
+} from '@/content/media';
+
 export type ProjectImage = {
   src: string;
   alt: string;
 };
 
+export type ProjectVideo = {
+  src: string;
+  alt: string;
+};
+
+export type ProjectMedia =
+  | { type: 'image'; src: string; alt: string }
+  | { type: 'video'; src: string; alt: string };
+
 export type Project = {
-  slug: string;
+  slug: VolumeSlug;
   title: string;
   category: string;
   year: string;
@@ -15,191 +31,104 @@ export type Project = {
   coverImage: ProjectImage;
   heroImage: ProjectImage;
   gallery: ProjectImage[];
+  videos: ProjectVideo[];
+  media: ProjectMedia[];
 };
 
-export const projects: Project[] = [
+const volumeMeta: Record<
+  VolumeSlug,
   {
-    slug: 'atelier-noir',
-    title: 'Atelier Noir',
-    category: 'Photography Portfolio',
-    year: '2026',
-    client: 'Independent Fashion Photographer',
-    excerpt:
-      'A monochrome portfolio system built like a printed lookbook: measured pacing, cinematic transitions, and an editorial structure that gives each series space to breathe.',
-    services: [
-      'Creative direction',
-      'UI design',
-      'Motion design',
-      'Front-end development',
-    ],
+    title: string;
+    excerpt: string;
+    services: string[];
+    metrics: { label: string; value: string }[];
+  }
+> = {
+  'atelier-noir': {
+    title: 'Volume I — Portraits',
+    excerpt: 'Portraits and quiet frames of Lerato through the years.',
+    services: ['Her smile', 'Soft light', 'Close moments'],
     metrics: [
-      { label: 'Format', value: 'Lookbook system' },
-      { label: 'Palette', value: 'Pure monochrome' },
-      { label: 'Build', value: 'Next.js + GSAP' },
-    ],
-    coverImage: {
-      src: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=1200&q=80',
-      alt: 'Black and white portrait of a woman in soft studio light.',
-    },
-    heroImage: {
-      src: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1600&q=80',
-      alt: 'Fashion portrait photographed with strong contrast and editorial framing.',
-    },
-    gallery: [
-      {
-        src: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1200&q=80',
-        alt: 'Monochrome portrait study with strong eye contact.',
-      },
-      {
-        src: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=1200&q=80',
-        alt: 'Close portrait cropped tightly like a magazine cover.',
-      },
-      {
-        src: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1200&q=80',
-        alt: 'Profile portrait in soft black and white light.',
-      },
-      {
-        src: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?auto=format&fit=crop&w=1200&q=80',
-        alt: 'Portrait detail used as a gallery close-up.',
-      },
+      { label: 'Spread', value: '01' },
+      { label: 'Theme', value: 'Portraits' },
+      { label: 'Album', value: 'Volume I' },
     ],
   },
-  {
-    slug: 'silent-frames',
-    title: 'Silent Frames',
-    category: 'Web & Interactive',
-    year: '2025',
-    client: 'Cultural Image Archive',
-    excerpt:
-      'A restrained web experience for archival photography, where typography, whitespace, and scroll rhythm do the heavy lifting instead of decorative effects.',
-    services: [
-      'Information architecture',
-      'Experience design',
-      'Animation system',
-    ],
+  'silent-frames': {
+    title: 'Volume II — Quiet days',
+    excerpt: 'Still and gentle moments from ordinary days worth keeping.',
+    services: ['Calm scenes', 'Soft frames', 'In-between moments'],
     metrics: [
-      { label: 'Approach', value: 'Editorial pacing' },
-      { label: 'Motion', value: 'Scroll-triggered reveals' },
-      { label: 'Focus', value: 'Reading + imagery' },
-    ],
-    coverImage: {
-      src: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1200&q=80',
-      alt: 'Close-up of a camera body used as a photography placeholder.',
-    },
-    heroImage: {
-      src: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80',
-      alt: 'Silhouette figure in an atmospheric landscape used as an editorial hero frame.',
-    },
-    gallery: [
-      {
-        src: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1200&q=80',
-        alt: 'Camera detail representing the archive interface.',
-      },
-      {
-        src: 'https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&w=1200&q=80',
-        alt: 'Landscape frame styled like an archive plate.',
-      },
-      {
-        src: 'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80',
-        alt: 'Quiet landscape used as a supporting story image.',
-      },
-      {
-        src: 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?auto=format&fit=crop&w=1200&q=80',
-        alt: 'Editorial image of a book and table arrangement.',
-      },
+      { label: 'Spread', value: '02' },
+      { label: 'Theme', value: 'Quiet days' },
+      { label: 'Album', value: 'Volume II' },
     ],
   },
-  {
-    slug: 'afterlight-studio',
-    title: 'Afterlight Studio',
-    category: 'Design Agency',
-    year: '2025',
-    client: 'Boutique Creative Studio',
-    excerpt:
-      'A portfolio platform that positions the studio through a quiet but highly controlled visual language, balancing credibility, atmosphere, and conversion.',
-    services: [
-      'Brand expression',
-      'Portfolio strategy',
-      'Responsive art direction',
-    ],
+  'afterlight-studio': {
+    title: 'Volume III — Golden light',
+    excerpt: 'Warm frames where the light falls just right on her.',
+    services: ['Golden hour', 'Warm tones', 'Soft glow'],
     metrics: [
-      { label: 'Feel', value: 'Premium + sparse' },
-      { label: 'Layouts', value: 'Asymmetric grid' },
-      { label: 'Device pass', value: 'Desktop first, mobile refined' },
-    ],
-    coverImage: {
-      src: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1200&q=80',
-      alt: 'Minimal fashion image used as a design agency case study cover.',
-    },
-    heroImage: {
-      src: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1600&q=80',
-      alt: 'Standing figure framed with generous negative space.',
-    },
-    gallery: [
-      {
-        src: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1200&q=80',
-        alt: 'Figure standing in clean studio light.',
-      },
-      {
-        src: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?auto=format&fit=crop&w=1200&q=80',
-        alt: 'Portrait close-up for the agency founder story.',
-      },
-      {
-        src: 'https://images.unsplash.com/photo-1492106087820-71f1a00d2b11?auto=format&fit=crop&w=1200&q=80',
-        alt: 'Quiet working desk composition.',
-      },
-      {
-        src: 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80',
-        alt: 'Studio interior used as a placeholder environment image.',
-      },
+      { label: 'Spread', value: '03' },
+      { label: 'Theme', value: 'Golden light' },
+      { label: 'Album', value: 'Volume III' },
     ],
   },
-  {
-    slug: 'city-echoes',
-    title: 'City Echoes',
-    category: 'Street Photography',
-    year: '2024',
-    client: 'Personal Series',
-    excerpt:
-      'An immersive case study for urban black-and-white photography with layered crops, sequence-based storytelling, and tactile interactions inspired by print.',
-    services: [
-      'Narrative sequencing',
-      'Case study design',
-      'Micro-interactions',
-    ],
+  'city-echoes': {
+    title: 'Volume IV — Out and about',
+    excerpt: 'City streets, open roads, and days spent exploring together.',
+    services: ['City walks', 'Open roads', 'Adventures'],
     metrics: [
-      { label: 'Story mode', value: 'Sequential spreads' },
-      { label: 'Navigation', value: 'Index based' },
-      { label: 'Audience', value: 'Collectors + curators' },
-    ],
-    coverImage: {
-      src: 'https://images.unsplash.com/photo-1504593811423-6dd665756598?auto=format&fit=crop&w=1200&q=80',
-      alt: 'Street photography frame with a lone figure in the city.',
-    },
-    heroImage: {
-      src: 'https://images.unsplash.com/photo-1504593811423-6dd665756598?auto=format&fit=crop&w=1600&q=80',
-      alt: 'Urban black and white scene with a single figure in deep perspective.',
-    },
-    gallery: [
-      {
-        src: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=1200&q=80',
-        alt: 'City street scene with architecture and movement.',
-      },
-      {
-        src: 'https://images.unsplash.com/photo-1482192596544-9eb780fc7f66?auto=format&fit=crop&w=1200&q=80',
-        alt: 'Long corridor with graphic floor pattern.',
-      },
-      {
-        src: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80',
-        alt: 'Moody city lane photographed in monochrome style.',
-      },
-      {
-        src: 'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80',
-        alt: 'Open urban landscape to punctuate the gallery sequence.',
-      },
+      { label: 'Spread', value: '04' },
+      { label: 'Theme', value: 'Out and about' },
+      { label: 'Album', value: 'Volume IV' },
     ],
   },
-];
+};
+
+function buildProject(slug: VolumeSlug): Project {
+  const volumeImages = getVolumeImages(slug);
+  const volumeVideos = getVolumeVideos(slug);
+  const meta = volumeMeta[slug];
+  const [cover, hero, ...rest] = volumeImages;
+
+  const gallery = rest.map((src, index) => ({
+    src,
+    alt: `Lerato — ${meta.title} photo ${String(index + 1).padStart(2, '0')}`,
+  }));
+
+  const videos = volumeVideos.map((src, index) => ({
+    src,
+    alt: `Lerato — ${meta.title} clip ${String(index + 1).padStart(2, '0')}`,
+  }));
+
+  return {
+    slug,
+    title: meta.title,
+    category: 'Photo spread',
+    year: 'Memories',
+    client: 'Lerato Mokoka',
+    excerpt: meta.excerpt,
+    services: meta.services,
+    metrics: meta.metrics,
+    coverImage: {
+      src: cover ?? '',
+      alt: `Lerato — ${meta.title} cover`,
+    },
+    heroImage: {
+      src: hero ?? cover ?? '',
+      alt: `Lerato — ${meta.title} hero`,
+    },
+    gallery,
+    videos,
+    media: [
+      ...gallery.map((item) => ({ type: 'image' as const, ...item })),
+      ...videos.map((item) => ({ type: 'video' as const, ...item })),
+    ],
+  };
+}
+
+export const projects: Project[] = volumeSlugs.map(buildProject);
 
 export function getProject(slug: string) {
   return projects.find((project) => project.slug === slug);

@@ -1,12 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
 
-const STORAGE_KEY = 'cathy-site-tone';
+const STORAGE_KEY = 'lerato-site-tone';
 
 export function SiteToneSwitch() {
-  const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
   const [isPurple, setIsPurple] = useState(false);
 
@@ -24,7 +22,7 @@ export function SiteToneSwitch() {
     window.localStorage.setItem(STORAGE_KEY, isPurple ? 'purple' : 'default');
   }, [isPurple, mounted]);
 
-  if (!mounted || pathname.startsWith('/gallery')) {
+  if (!mounted) {
     return null;
   }
 
@@ -33,14 +31,16 @@ export function SiteToneSwitch() {
       type="button"
       className={`site-tone-switch${isPurple ? ' site-tone-switch--active' : ''}`}
       aria-pressed={isPurple}
+      title="Flip the site colour"
       aria-label={
         isPurple
-          ? 'Switch website to default tone'
-          : 'Switch website to purple tone'
+          ? 'Switch website back to default colour'
+          : 'Switch website to purple colourme tone'
       }
       onClick={() => setIsPurple((value) => !value)}
     >
-      <span className="site-tone-switch__label"></span>
+      <span className="site-tone-switch__hint">Flip colour</span>
+      <span className="site-tone-switch__label">default</span>
       <span className="site-tone-switch__track">
         <span className="site-tone-switch__thumb" />
       </span>

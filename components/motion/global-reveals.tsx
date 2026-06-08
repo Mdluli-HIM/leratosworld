@@ -77,7 +77,7 @@ export function GlobalReveals() {
       });
 
       const rails = gsap.utils.toArray<HTMLElement>(
-        '.visual-home-rail, .project-book-rail, .site-footer-book__rail, .library-shelf-heading'
+        '.visual-home-rail, .project-book-rail, .library-shelf-heading'
       );
 
       rails.forEach((rail) => {

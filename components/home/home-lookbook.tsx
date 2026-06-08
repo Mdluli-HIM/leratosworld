@@ -1,10 +1,13 @@
 import type { CSSProperties } from 'react';
 import Image from 'next/image';
 
+import { AlbumVideo } from '@/components/media/album-video';
+import { home } from '@/content/media';
+
 const spreadOne = {
   left: {
-    src: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1200&q=80',
-    alt: 'Portrait image placed on a quiet white page with large margins.',
+    src: home.spread01,
+    alt: 'Lerato — spread 01',
     position: 'center 18%',
     mobilePosition: 'center 20%',
   },
@@ -12,22 +15,22 @@ const spreadOne = {
 
 const spreadTwo = [
   {
-    src: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1000&q=80',
-    alt: 'Full body monochrome fashion portrait.',
+    src: home.spread02a,
+    alt: 'Lerato — spread 02a',
     position: 'center 18%',
     mobilePosition: 'center 20%',
     className: 'photobook-collage__item photobook-collage__item--tall',
   },
   {
-    src: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=1000&q=80',
-    alt: 'Quiet portrait crop with soft shadow.',
+    src: home.spread02b,
+    alt: 'Lerato — spread 02b',
     position: 'center 16%',
     mobilePosition: 'center 18%',
     className: 'photobook-collage__item photobook-collage__item--square',
   },
   {
-    src: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1000&q=80',
-    alt: 'Editorial crop with stronger negative space.',
+    src: home.spread02c,
+    alt: 'Lerato — spread 02c',
     position: 'center 48%',
     mobilePosition: 'center 52%',
     className: 'photobook-collage__item photobook-collage__item--landscape',
@@ -36,26 +39,28 @@ const spreadTwo = [
 
 const spreadThree = {
   left: {
-    src: 'https://images.unsplash.com/photo-1492707892479-7bc8d5a4ee93?auto=format&fit=crop&w=1400&q=80',
-    alt: 'Figure in motion with dramatic contrast.',
+    src: home.spread03Left,
+    alt: 'Lerato — spread 03 left',
     position: 'center 56%',
     mobilePosition: 'center 60%',
   },
   right: {
-    src: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=80',
-    alt: 'Atmospheric editorial landscape composition.',
+    src: home.spread03Right,
+    alt: 'Lerato — spread 03 right',
     position: 'center 52%',
     mobilePosition: 'center 56%',
   },
 };
 
 export function HomeLookbook() {
+  const [videoOne, videoTwo] = home.videos;
+
   return (
     <section className="section photobook-sections">
       <div className="page-shell">
         <div className="visual-home-rail" data-reveal>
-          <span>04</span>
-          <span>Picture book</span>
+          <span>02</span>
+          <span>Photo spreads</span>
         </div>
 
         <article
@@ -84,14 +89,9 @@ export function HomeLookbook() {
 
           <div className="photobook-spread__page photobook-spread__page--dark photobook-spread__page--composition-copy">
             <div className="photobook-copy photobook-copy--composition">
-              <p className="photobook-copy__label">Chapter 01</p>
-              <h2 className="photobook-copy__title">Portrait studies</h2>
+              <p className="photobook-copy__label">Spread 01</p>
+              <h2 className="photobook-copy__title">Her smile</h2>
             </div>
-          </div>
-
-          <div className="photobook-spread__footer">
-            <span>Quiet sequence</span>
-            <span>01 / 03</span>
           </div>
         </article>
 
@@ -126,16 +126,26 @@ export function HomeLookbook() {
 
           <div className="photobook-spread__page photobook-spread__page--quiet photobook-spread__page--centered">
             <div className="photobook-copy photobook-copy--tiny photobook-copy--composition">
-              <p className="photobook-copy__label">Chapter 02</p>
-              <h2 className="photobook-copy__title">Sequence</h2>
+              <p className="photobook-copy__label">Spread 02</p>
+              <h2 className="photobook-copy__title">Good times</h2>
             </div>
           </div>
-
-          <div className="photobook-spread__footer">
-            <span>Image first</span>
-            <span>02 / 03</span>
-          </div>
         </article>
+
+        {videoOne ? (
+          <article className="photobook-spread photobook-spread--video" data-reveal>
+            <div className="photobook-spread__page photobook-spread__page--video">
+              <AlbumVideo src={videoOne} autoPlay={false} />
+            </div>
+
+            <div className="photobook-spread__page photobook-spread__page--dark photobook-spread__page--centered">
+              <div className="photobook-copy photobook-copy--composition">
+                <p className="photobook-copy__label">Moving memory</p>
+                <h2 className="photobook-copy__title">In motion</h2>
+              </div>
+            </div>
+          </article>
+        ) : null}
 
         <article
           className="photobook-spread photobook-spread--composition"
@@ -162,28 +172,29 @@ export function HomeLookbook() {
           </div>
 
           <div className="photobook-spread__page photobook-spread__page--quiet photobook-spread__page--composition-right">
-            <div
-              className="photobook-image photobook-image--landscape photobook-image--landscape-refined"
-              style={
-                {
-                  '--image-position': spreadThree.right.position,
-                  '--image-position-mobile': spreadThree.right.mobilePosition,
-                } as CSSProperties
-              }
-            >
-              <Image
-                src={spreadThree.right.src}
-                alt={spreadThree.right.alt}
-                fill
-                sizes="(max-width: 720px) 100vw, (max-width: 1100px) 40vw, 26vw"
-                className="editorial-image"
-              />
-            </div>
-          </div>
-
-          <div className="photobook-spread__footer">
-            <span>Open spread</span>
-            <span>03 / 03</span>
+            {videoTwo ? (
+              <div className="photobook-image photobook-image--landscape photobook-image--landscape-refined photobook-image--video">
+                <AlbumVideo src={videoTwo} autoPlay={false} />
+              </div>
+            ) : (
+              <div
+                className="photobook-image photobook-image--landscape photobook-image--landscape-refined"
+                style={
+                  {
+                    '--image-position': spreadThree.right.position,
+                    '--image-position-mobile': spreadThree.right.mobilePosition,
+                  } as CSSProperties
+                }
+              >
+                <Image
+                  src={spreadThree.right.src}
+                  alt={spreadThree.right.alt}
+                  fill
+                  sizes="(max-width: 720px) 100vw, (max-width: 1100px) 40vw, 26vw"
+                  className="editorial-image"
+                />
+              </div>
+            )}
           </div>
         </article>
       </div>

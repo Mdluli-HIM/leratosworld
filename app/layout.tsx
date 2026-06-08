@@ -4,7 +4,6 @@ import { Inter, Oswald } from 'next/font/google';
 import { PageLoader } from '@/components/motion/page-loader';
 import { GlobalReveals } from '@/components/motion/global-reveals';
 import { SiteHeader } from '@/components/site/site-header';
-import { SiteFooter } from '@/components/site/site-footer';
 import { PurpleCursor } from '@/components/motion/purple-cursor';
 import { SiteToneSwitch } from '@/components/site/site-tone-switch';
 
@@ -22,9 +21,9 @@ const displayFont = Oswald({
 });
 
 export const metadata: Metadata = {
-  title: 'Cathy Dolle — Monochrome Portfolio',
+  title: 'Lerato Mokoka — Birthday Photo Album',
   description:
-    'A premium monochrome portfolio concept for a freelance designer and developer working across photography, web design, and interactive experiences.',
+    'A digital photo album birthday gift for Lerato Mokoka — moments, memories, and pictures arranged like a book made just for her.',
 };
 
 export default function RootLayout({
@@ -38,7 +37,6 @@ export default function RootLayout({
         <SiteToneSwitch />
         <SiteHeader />
         {children}
-        <SiteFooter />
       </body>
     </html>
   );
