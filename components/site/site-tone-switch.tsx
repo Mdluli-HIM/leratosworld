@@ -1,10 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 const STORAGE_KEY = 'lerato-site-tone';
 
 export function SiteToneSwitch() {
+  const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
   const [isPurple, setIsPurple] = useState(false);
 
@@ -22,7 +24,7 @@ export function SiteToneSwitch() {
     window.localStorage.setItem(STORAGE_KEY, isPurple ? 'purple' : 'default');
   }, [isPurple, mounted]);
 
-  if (!mounted) {
+  if (!mounted || pathname.startsWith('/gallery')) {
     return null;
   }
 
